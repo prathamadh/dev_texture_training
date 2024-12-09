@@ -33,9 +33,9 @@ class DensePredModel(nn.Module):
         # [x_32, x_16, x_8, x_4, x, ...]
 
             
-            half_features =[feature.to(device_list[1]) for feature in features[0]]
+            half_features =[feature.to(self.device_list[1]) for feature in features[0]]
 
-            other_features=torch.tensor(features[1]).to(device_list[1])
+            other_features=torch.tensor(features[1]).to(self.device_list[1])
             full_features=[half_features,other_features]
             out = self.decoder(full_features, **kwargs)
         else:
