@@ -32,7 +32,7 @@ class DensePredModel(nn.Module):
             features = self.encoder(input)
         # [x_32, x_16, x_8, x_4, x, ...]
 
-            features = model.depth_model.encoder(inputs)
+            
             half_features =[feature.to(device_list[1]) for feature in features[0]]
 
             other_features=torch.tensor(features[1]).to(device_list[1])
