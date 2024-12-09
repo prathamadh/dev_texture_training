@@ -15,7 +15,7 @@ def compute_roughness_expectation(prob, depth_values):
     return depth
 
 def interpolate_float32(x, size=None, scale_factor=None, mode='nearest', align_corners=None):
-    with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=False):
+    with torch.autocast(device_type='cuda:1', dtype=torch.bfloat16, enabled=False):
         return F.interpolate(x.float(), size=size, scale_factor=scale_factor, mode=mode, align_corners=align_corners)
 
 # def upflow8(flow, mode='bilinear'):
@@ -24,7 +24,7 @@ def interpolate_float32(x, size=None, scale_factor=None, mode='nearest', align_c
 
 def upflow4(flow, mode='bilinear'):
     new_size = (4 * flow.shape[2], 4 * flow.shape[3])
-    with torch.autocast(device_type='cuda', dtype=torch.bfloat16, enabled=False):
+    with torch.autocast(device_type='cuda:1', dtype=torch.bfloat16, enabled=False):
         return  F.interpolate(flow, size=new_size, mode=mode, align_corners=True)
 
 def coords_grid(batch, ht, wd):
@@ -621,7 +621,7 @@ class RAFTDepthNormalDPT5(nn.Module):
         # self.roughness_head=FeatureToGrayScale(input_channels=self.num_roughness_regressor_anchor, output_channels=1, scale_factor=4)
     
     def get_bins(self, bins_num):
-        depth_bins_vec = torch.linspace(math.log(self.min_val), math.log(self.max_val), bins_num, device="cuda")
+        depth_bins_vec = torch.linspace(math.log(self.min_val), math.log(self.max_val), bins_num, device="cuda:1")
         depth_bins_vec = torch.exp(depth_bins_vec)
         return depth_bins_vec
     
@@ -711,7 +711,7 @@ class RAFTDepthNormalDPT5(nn.Module):
         return norm_normalize(torch.cat([normal_out, confidence], dim=1))
         #return norm_normalize(torch.cat([normal_out, confidence], dim=1).float())
     
-    def create_mesh_grid(self, height, width, batch, device="cuda", set_buffer=True):
+    def create_mesh_grid(self, height, width, batch, device="cuda:1", set_buffer=True):
         y, x = torch.meshgrid([torch.arange(0, height, dtype=torch.float32, device=device),
                                torch.arange(0, width, dtype=torch.float32, device=device)], indexing='ij')
         meshgrid = torch.stack((x, y))
