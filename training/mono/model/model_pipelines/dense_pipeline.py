@@ -19,8 +19,17 @@ class DensePredModel(nn.Module):
         #     self.decoder = decoder
 
         self.training = True
+
+    
     
     def forward(self, input, **kwargs):
+        def move_to_device(item, device):
+            if isinstance(item, torch.Tensor):
+                return item.to(device)
+            elif isinstance(item, tuple):
+                return tuple(move_to_device(x, device) for x in item)
+            else:
+                return item 
         # [f_32, f_16, f_8, f_4]
         
         if len(self.device_list )>1:
@@ -28,8 +37,7 @@ class DensePredModel(nn.Module):
             self.decoder = self.decoder.to(self.device_list[1])
             features = self.encoder(input)
         # [x_32, x_16, x_8, x_4, x, ...]
-            for feature in features:
-                feature=feature.to(self.device[1])
+            features=[move_to_device(item, self.device_list[1]) for feature in features]
             out = self.decoder(features, **kwargs)
         else:
             features = self.encoder(input)
