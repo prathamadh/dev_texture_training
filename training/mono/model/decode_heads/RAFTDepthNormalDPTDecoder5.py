@@ -617,6 +617,7 @@ class RAFTDepthNormalDPT5(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
         self.pratham=None
+        self.kaggle_device=cfg.kaggle['device_list']
         # self.roughness_head=FeatureToGrayScale(input_channels=self.num_roughness_regressor_anchor, output_channels=1, scale_factor=4)
     
     def get_bins(self, bins_num):
@@ -750,7 +751,14 @@ class RAFTDepthNormalDPT5(nn.Module):
 
     def forward(self, vit_features, **kwargs):
         ## read vit token to multi-scale features
-        B, H, W, _, _, num_register_tokens = vit_features[1]
+        if len(self.kaggle_device)<1:
+            B, H, W, _, _, num_register_tokens = vit_features[1]
+        else:
+            ten=vit_features[1]
+            ten =tuple( [feature.to("cpu").item() for feature in ten])
+
+            B, H, W, _, _, num_register_tokens =ten 
+            del ten 
         vit_features = vit_features[0]
 
         ## Error logging
