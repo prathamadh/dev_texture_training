@@ -28,7 +28,8 @@ class DensePredModel(nn.Module):
             self.decoder = self.decoder.to(self.device_list[1])
             features = self.encoder(input)
         # [x_32, x_16, x_8, x_4, x, ...]
-            features=features.to(self.device[1])
+            for feature in features:
+            feature=feature.to(self.device[1])
             out = self.decoder(features, **kwargs)
         else:
             features = self.encoder(input)
