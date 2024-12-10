@@ -751,7 +751,7 @@ class RAFTDepthNormalDPT5(nn.Module):
 
     def forward(self, vit_features, **kwargs):
         ## read vit token to multi-scale features
-        if len(self.kaggle_device)<1:
+        if len(self.kaggle_device)<=1:
             B, H, W, _, _, num_register_tokens = vit_features[1]
         else:
             ten=vit_features[1]
